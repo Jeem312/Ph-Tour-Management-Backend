@@ -3,10 +3,11 @@ import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import { promise } from "zod";
 import { envConfig } from "./app/config/env";
+import app from "./app";
 
 
 let server: Server;
-const app = express();
+
 const startServer = async () => {
   try{
     await mongoose.connect(envConfig.DB_URL,);
