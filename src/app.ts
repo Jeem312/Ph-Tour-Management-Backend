@@ -1,12 +1,22 @@
-import express, { Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import express, { Request, Response} from "express";
 import cors from "cors";
-import { userRouter } from "./app/modules/user/user.router";
+
+
+import { router } from "./app/router/router";
+
+import { globalErrorHandler } from "./app/middleWares/globalErrorHandler";
+import { notFoundHandler } from "./app/middleWares/notFound";
 const app = express();
  
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/v1/user", userRouter);
+app.use("/api/v1", router);
+
+app.use(globalErrorHandler);
+
+app.use(notFoundHandler)
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
