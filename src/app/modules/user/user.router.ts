@@ -1,30 +1,48 @@
-import { NextFunction, Request, Response, Router } from "express";
+import {  NextFunction, Request, Response, Router } from "express";
 import { UserController } from "./user.controller";
-import z from "zod";
+import { createUserZodSchema } from "./user.validation";
+import { validateRequest } from "../../middleWares/validatedRequest";
+import AppError from "../../errorHelpers/AppError";
+import  jwt, { JwtPayload }  from "jsonwebtoken";
+import { Role } from "./user.interface";
+import { verifyToken } from "../../utils/jwt";
+import { envConfig } from "../../config/env";
+
 
 const router = Router();
 
-router.post("/register", async (req:Request,res:Response,next:NextFunction)=>{
-    const createUserZodSchema = z.object({
-        name: z.string({
-            invalid_type_error: "Name Must Be String "
-        }).min(2,{message: "Name Too Short "}).max(50,{message:"Name too long"}),
-        email: z.string().email(),
-      
-        password: z.string().min(8,{
-            message: "Password Should Be 8 Character"
-        }).optional(),
-        phone: z.string().min(11).max(11).optional(),
-        address: z.string().optional(),
-          
-           
-    })
+const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Response,next:NextFunction)=>{
+        try {
+            const accessToken = req.headers.authorization;
 
+            if (!accessToken){
+                throw new AppError(403,"NO Token Received")
+            }
+            const verifiedToken =verifyToken(accessToken,envConfig.JWT_ACCESS_SECRET)
+              if(!verifiedToken){
+                throw new AppError(403,"You are not authorized")
 
- req.body =await createUserZodSchema.parseAsync(req.body);
- next()
-},
+              }
+
+        if (
+            (verifiedToken as JwtPayload).role !== Role.ADMIN ) {
+            throw new AppError(403, "you are not permitted");
+        }
+            console.log(verifiedToken);
+            next()
+        } catch (error) {
+            next(error)
+            
+        }
+    }
+    
+    
+
+router.post("/register", 
+    validateRequest(createUserZodSchema),
      UserController.createUser);
-router.get("/all-users", UserController.getAllUsers);
+
+router.get("/all-users",
+ checkAuth("ADMIN","SUPER_ADMIN"),  UserController.getAllUsers);
 
 export const userRouter = router;
