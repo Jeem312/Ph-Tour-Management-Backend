@@ -1,9 +1,11 @@
 import AppError from "../../errorHelpers/AppError";
 import { IUser } from "../user/user.interface"
 import httpStatus from "http-status-codes"
-import bycryptjs from "bcryptjs"
+import bcryptjs from "bcryptjs"
 import User from "../user/user.models";
 import jwt from "jsonwebtoken"
+import { generateToken } from "../../utils/jwt";
+import { envConfig } from "../../config/env";
 
 const credentialsLogin = async(payload:Partial<IUser>)=>{
     const {email,password} = payload;
@@ -13,7 +15,7 @@ const credentialsLogin = async(payload:Partial<IUser>)=>{
     if(!isUserExist){
         throw new AppError(httpStatus.BAD_REQUEST,'User Not Exist')
     }
-    const isPasswordMatched = await bycryptjs.compare(password as string, isUserExist.password as string);
+    const isPasswordMatched = await bcryptjs.compare(password as string, isUserExist.password as string);
 
     if(!isPasswordMatched){
         throw new AppError(httpStatus.BAD_REQUEST,"Incorrect Password")
@@ -24,10 +26,8 @@ const credentialsLogin = async(payload:Partial<IUser>)=>{
         email: isUserExist.email,
         role: isUserExist.role
     }
-    const accessToken = jwt.sign(jwtPayload,"secret",{
-        expiresIn:"5d"
-    })
-
+    const accessToken = generateToken(jwtPayload,envConfig.JWT_ACCESS_SECRET,envConfig.JWT_ACCESS_EXPIRES)
+    // console.log("signin",envConfig.JWT_ACCESS_SECRET)
  return{
    accessToken
  }
