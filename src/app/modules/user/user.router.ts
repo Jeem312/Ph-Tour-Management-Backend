@@ -2,41 +2,20 @@ import {  NextFunction, Request, Response, Router } from "express";
 import { UserController } from "./user.controller";
 import { createUserZodSchema } from "./user.validation";
 import { validateRequest } from "../../middleWares/validatedRequest";
-import AppError from "../../errorHelpers/AppError";
-import  jwt, { JwtPayload }  from "jsonwebtoken";
-import { Role } from "./user.interface";
-import { verifyToken } from "../../utils/jwt";
-import { envConfig } from "../../config/env";
 
+import { Role } from "./user.interface";
+
+import { } from "express";
+import { JwtPayload } from "jsonwebtoken";
+import { envConfig } from "../../config/env";
+import AppError from "../../errorHelpers/AppError";
+import { verifyToken } from "../../utils/jwt";
+import { checkAuth } from "../../middleWares/checkAuth";
 
 const router = Router();
 
-const checkAuth = (...authRoles:string[])=>  async(req:Request,res:Response,next:NextFunction)=>{
-        try {
-            const accessToken = req.headers.authorization;
-// console.log( process.env.JWT_ACCESS_SECRET )
-            if (!accessToken){
-                throw new AppError(403,"NO Token Received")
-            }
-            const verifiedToken =verifyToken(accessToken,envConfig.JWT_ACCESS_SECRET)as JwtPayload
-            // console.log("verify",envConfig.JWT_ACCESS_SECRET)
-              if(!verifiedToken){
-                throw new AppError(403,"You are not authorized")
 
-              }
 
-        if (
-            (!authRoles.includes(verifiedToken.role) )){
-            throw new AppError(403, "you are not permitted");
-        }
-            console.log(verifiedToken);
-            next()
-        } catch (error) {
-            next(error)
-            
-        }
-    }
-    
     
 
 router.post("/register", 
@@ -45,5 +24,6 @@ router.post("/register",
 
 router.get("/all-users",
  checkAuth(Role.ADMIN,Role.SUPER_ADMIN),  UserController.getAllUsers);
+ router.patch("/:id", checkAuth(...Object.values(Role)),UserController.updateUser)
 
 export const userRouter = router;
