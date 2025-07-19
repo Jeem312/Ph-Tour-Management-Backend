@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { promise } from "zod";
 import { envConfig } from "./app/config/env";
 import app from "./app";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 
 let server: Server;
@@ -25,7 +26,10 @@ app.get("/", (req: Request, res: Response) => {
     message: "Welcome to the Tour Management System API"
   })
 });
-startServer();
+(async () => {
+  await startServer();
+  await seedSuperAdmin();
+})();
 
 // Handle graceful shutdown
 process.on("uncaughtException", (error) => {
