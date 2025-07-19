@@ -4,6 +4,9 @@ import httpStatus from "http-status-codes";
 import { UserService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { SendResponse } from "../../utils/sendResponse";
+import { verifyToken } from "../../utils/jwt";
+import { envConfig } from "../../config/env";
+import { JwtPayload } from "jsonwebtoken";
 
 
 const createUser = async (req: Request, res: Response,next:NextFunction) => {
@@ -39,9 +42,43 @@ const getAllUsers = catchAsync(async (req: Request, res: Response,next:NextFunct
     meta: result.meta
   })
 });
+
+
+
+const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => { 
+  const userId = req.params.id;
+  // const token = req.headers.authorization;
+  // const verifiedToken = verifyToken(token as string,envConfig.JWT_ACCESS_SECRET)as JwtPayload;
+  const verifiedToken = req.user;
+  const payload = req.body;
+
+  if (!verifiedToken) {
+    return SendResponse(res, {
+      statusCode: httpStatus.UNAUTHORIZED,
+      success: false,
+      message: "Unauthorized: No valid token found",
+      data: null,
+    });
+  }
+
+  const result = await UserService.updateUser(userId, payload, verifiedToken);
+  // res.status(httpStatus.OK).json({
+  //   success: true,
+  //   message: "Users retrieved successfully",
+  //   data: users
+  // })
+
+  SendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users updated successfully",
+    data: result,
+  });
+});
 export const UserController = {
   createUser,
-  getAllUsers
+  getAllUsers,
+  updateUser
 };
 
 // route matching -> controller -> service -> model
