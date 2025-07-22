@@ -9,6 +9,7 @@ import { globalErrorHandler } from "./app/middleWares/globalErrorHandler";
 import { notFoundHandler } from "./app/middleWares/notFound";
 import cookieParser from "cookie-parser";
 import passport from "passport"
+import './app/config/passport'
 const app = express();
 
 app.use(exressSession(
@@ -18,8 +19,8 @@ app.use(exressSession(
     saveUninitialized: false
   }
 ))
-app.use(passport.initialize);
-app.use(passport.session);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use (cookieParser());
 app.use(express.json());
 app.use(cors());
