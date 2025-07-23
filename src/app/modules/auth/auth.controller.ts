@@ -12,21 +12,41 @@ import passport from "passport";
 
 const credentialsLogin= catchAsync(async (req: Request, res: Response,next:NextFunction) => { 
   
-const loginInfo = await AuthServices.credentialsLogin(req.body);
+// const loginInfo = await AuthServices.credentialsLogin(req.body);
 
  
-// passport.authenticate()
+passport.authenticate("local",async(err:any , user:any , info:any)=>{
 
-setAuthCookie(res,loginInfo)
+  if (err) {
+    // return next(err);
+    return next(new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"));
+  }
+
+  if (!user) {
+    return next(new AppError(httpStatus.UNAUTHORIZED, info.message || "Unauthorized"));
+  }
+
+  const userToken = createUserTokens(user);
+  const { password, ...rest } = user.toObject();
+
+    setAuthCookie(res,userToken)
 
   SendResponse(res,{
     statusCode: httpStatus.OK,
     success: true,
     message: "Users log in successfully",
-    data: loginInfo,
+    data: {
+      accessToken: user.accessToken,
+      refreshToken: user.refreshToken,
+      user: rest,
+      
+    },
  
   })
+})(req,res,next)
 });
+
+
 
 const getNewAccessToken= catchAsync(async (req: Request, res: Response,next:NextFunction) => { 
   const refreshToken = req.cookies.refreshToken
