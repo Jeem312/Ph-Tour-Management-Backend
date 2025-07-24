@@ -2,9 +2,11 @@
 import { Request, Response, NextFunction } from "express";
 import { envConfig } from "../config/env"
 import AppError from "../errorHelpers/AppError";
-import { object } from "zod";
 
 export const globalErrorHandler = (err:any, req: Request, res: Response, next:NextFunction) => {
+  if (envConfig.NODE_ENV === "development") {
+    console.error("Error:", err);
+  }
 
     let statusCode = 500;
     let message =  `Something went wrong ${err.message}`;
@@ -13,6 +15,7 @@ export const globalErrorHandler = (err:any, req: Request, res: Response, next:Ne
       // message: "Cast error",
 
   }]
+
     
 if(err instanceof AppError){
   statusCode = err.statusCode;
