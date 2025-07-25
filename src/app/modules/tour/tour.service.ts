@@ -1,16 +1,25 @@
 
-import { QueryBuilder } from "../../utils/QueryBuilder";
-import { tourSearchableFields } from "./tour.constant";
+
+
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.models";
 
 const createTour = async (payload: ITour) => {
     const existingTour = await Tour.findOne({ title: payload.title });
+
     if (existingTour) {
         throw new Error("A tour with this title already exists.");
     }
 
-
+//      const baseSlug = payload.title.toLowerCase().split(" ").join("-");
+//       let slug = `${baseSlug}-tour`;
+//       let counter = 0;
+      
+//       while (await Tour.exists({ slug })) {
+//         slug = `${baseSlug}-tour-${++counter}`;
+//       }
+    
+// payload.slug = slug;
     const tour = await Tour.create(payload)
 
     return tour;
@@ -21,28 +30,24 @@ const createTour = async (payload: ITour) => {
 
 
 const getAllTours = async (query: Record<string, string>) => {
+const searchTerm = query.searchTerm || "";
 
+const tours = await Tour.find({
+    // title: { $regex: searchTerm, $options: 'i' }
 
-    const queryBuilder = new QueryBuilder(Tour.find(), query)
-
-    const tours = await queryBuilder
-        .search(tourSearchableFields)
-        .filter()
-        .sort()
-        .fields()
-        .paginate()
-
-
-    const [data, meta] = await Promise.all([
-        tours.build(),
-        queryBuilder.getMeta()
-    ])
-
-
-    return {
-        data,
-        meta
-    }
+    $or: [
+        { title: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } },
+        { location: { $regex: searchTerm, $options: 'i' } }
+    ]
+});
+const totalTours = await Tour.countDocuments();
+   return {
+       data: tours,
+       meta:{
+              total: totalTours
+       }
+   };
 };
 
 
@@ -53,7 +58,14 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     if (!existingTour) {
         throw new Error("Tour not found.");
     }
+//  const baseSlug = payload.title.toLowerCase().split(" ").join("-");
+//   let slug = `${baseSlug}-tour`;
+//   let counter = 0;
 
+//   while (await Tour.exists({ slug })) {
+//     slug = `${baseSlug}-tour-${++counter}`;
+//   }
+// payload.slug = slug;
 
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true });
 
@@ -93,6 +105,8 @@ const deleteTourType = async (id: string) => {
 
     return await TourType.findByIdAndDelete(id);
 };
+
+
 
 export const TourService = {
     createTour,

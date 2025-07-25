@@ -2,13 +2,13 @@ import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 
 const createDivision = async (payload: IDivision) => {
-  const baseSlug = payload.name.toLowerCase().split(" ").join("-");
-  let slug = `${baseSlug}-division`;
-  let counter = 0;
+//   const baseSlug = payload.name.toLowerCase().split(" ").join("-");
+//   let slug = `${baseSlug}-division`;
+//   let counter = 0;
   
-  while (await Division.exists({ slug })) {
-    slug = `${baseSlug}-division-${++counter}`;
-  }
+//   while (await Division.exists({ slug })) {
+//     slug = `${baseSlug}-division-${++counter}`;
+//   }
 
 
  
@@ -19,7 +19,7 @@ const createDivision = async (payload: IDivision) => {
     }
 
 
-
+// payload.slug = slug;
     const division = await Division.create(payload);
 
     return division
@@ -54,7 +54,14 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
         throw new Error("A division with this name already exists.");
     }
 
-
+//  const baseSlug = payload.name.toLowerCase().split(" ").join("-");
+//   let slug = `${baseSlug}-division`;
+//   let counter = 0;
+  
+//   while (await Division.exists({ slug })) {
+//     slug = `${baseSlug}-division-${++counter}`;
+//   }
+// payload.slug = slug;
 
     const updatedDivision = await Division.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
 
