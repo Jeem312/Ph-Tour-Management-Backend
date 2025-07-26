@@ -30,8 +30,9 @@ const createTour = async (payload: ITour) => {
 
 
 const getAllTours = async (query: Record<string, string>) => {
+    const filter = query;
 const searchTerm = query.searchTerm || "";
-
+delete filter.searchTerm;
 const tours = await Tour.find({
     // title: { $regex: searchTerm, $options: 'i' }
 
@@ -40,7 +41,7 @@ const tours = await Tour.find({
         { description: { $regex: searchTerm, $options: 'i' } },
         { location: { $regex: searchTerm, $options: 'i' } }
     ]
-});
+}).find(filter);
 const totalTours = await Tour.countDocuments();
    return {
        data: tours,
