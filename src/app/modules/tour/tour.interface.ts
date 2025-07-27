@@ -9,6 +9,8 @@ export interface ITour {
     description?: string;
     location?: string;
     costFrom?: number;
+    departureLocation?: string;
+    arrivalLocation?: string;
     startDate?: Date;
     endDate?: Date;
     included?: string[];
