@@ -8,7 +8,7 @@ export interface ITour {
     images?: string[];
     description?: string;
     location?: string;
-    costFrom?: number;
+    costFrom: number;
     departureLocation?: string;
     arrivalLocation?: string;
     startDate?: Date;

@@ -36,8 +36,8 @@ passport.authenticate("local",async(err:any , user:any , info:any)=>{
     success: true,
     message: "Users log in successfully",
     data: {
-      accessToken: user.accessToken,
-      refreshToken: user.refreshToken,
+ accessToken: userToken.accessToken,   // ✅ সঠিক
+    refreshToken: userToken.refreshToken,
       user: rest,
       
     },
