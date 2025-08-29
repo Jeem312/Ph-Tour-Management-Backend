@@ -23,10 +23,10 @@ export interface IUser {
     name: string;
     role: Role;
     password?: string;
-    phone?: string;
-    picture?: string;
-    address?: string;
-    isDeleted?: string;
+    phone: string;
+    picture: string;
+    address: string;
+    isDeleted: boolean;
     isActive?: isActive;
     isVerified?:boolean;
     auths?: IAuthProvider[];
