@@ -19,11 +19,17 @@ interface EnvConfig {
   GOOGLE_CLIENT_ID:string,
   FRONTEND_URL:string,
   EXPRESS_SESSION_SECRET:string,
+  SSL:{
+    STORE_ID:string,
+    STORE_PASSWORD:string,
+    PAYMENT_API:string,
+    VALIDATION_API:string
+  }
 
 
 }
 const loadEnvVariable = (): EnvConfig => {
-  const requiredEnvVars = ['PORT', 'DB_URL', 'NODE_ENV','JWT_ACCESS_SECRET','JWT_ACCESS_EXPIRES','BCRYPT_SALT_ROUND','SUPER_ADMIN_EMAIL','SUPER_ADMIN_PASSWORD','JWT_REFRESH_SECRET','JWT_REFRESH_SECRET_EXPIRED',"GOOGLE_CALLBACK_URL","GOOGLE_CLIENT_SECRET","GOOGLE_CLIENT_ID","FRONTEND_URL","EXPRESS_SESSION_SECRET"];
+  const requiredEnvVars = ['PORT', 'DB_URL', 'NODE_ENV','JWT_ACCESS_SECRET','JWT_ACCESS_EXPIRES','BCRYPT_SALT_ROUND','SUPER_ADMIN_EMAIL','SUPER_ADMIN_PASSWORD','JWT_REFRESH_SECRET','JWT_REFRESH_SECRET_EXPIRED',"GOOGLE_CALLBACK_URL","GOOGLE_CLIENT_SECRET","GOOGLE_CLIENT_ID","FRONTEND_URL","EXPRESS_SESSION_SECRET","SSL_STORE_ID","SSL_STORE_PASSWORD","SSL_PAYMENT_API","SSL_VALIDATION_API"];
   requiredEnvVars.forEach((envVar) => {
     if (!process.env[envVar]) {
       throw new Error(`Missing environment variable: ${envVar}`);
@@ -45,6 +51,12 @@ const loadEnvVariable = (): EnvConfig => {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
     FRONTEND_URL: process.env.FRONTEND_URL as string,
     EXPRESS_SESSION_SECRET: process.env.EXPRESS_SESSION_SECRET as string,
+    SSL: {
+      STORE_ID: process.env.SSL_STORE_ID as string,
+      STORE_PASSWORD: process.env.SSL_STORE_PASSWORD as string,
+      PAYMENT_API: process.env.SSL_PAYMENT_API as string,
+      VALIDATION_API: process.env.SSL_VALIDATION_API as string
+    }
   };
 };
 
