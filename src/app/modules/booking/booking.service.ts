@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import AppError from "../../errorHelpers/AppError";
@@ -8,6 +9,7 @@ import Booking from "./booking.model";
 import Payment from "../payment/payment.model";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Tour } from "../tour/tour.models";
+import { SSLService } from "../sslCommerce/sslCommerce.service";
 
 const getTransactionId = () => {
     return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`
@@ -48,10 +50,23 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
    const updatedBooking = await Booking.
    findByIdAndUpdate(booking[0]._id, { payment: payment[0]._id }, { new: true }).
    populate("user","name email phone address").populate("tour","title constFrom").populate("payment");
+
+   const sslPayload = await SSLService.sslPaymentInit({
+    address: (updatedBooking?.user as any).address,
+    email: (updatedBooking?.user as any).email,
+    name: (updatedBooking?.user as any).name,
+    phoneNumber: (updatedBooking?.user as any).phone,
+    amount: amount,
+    transactionId:transactionId,
+  });
+ const sslPayment = await SSLService.sslPaymentInit(sslPayload)
    await session.commitTransaction();
    session.endSession();
 
- return updatedBooking;
+ return {
+  payment:sslPayment,
+  booking: updatedBooking
+ }
         
       } catch (error) {
         await session.abortTransaction();
