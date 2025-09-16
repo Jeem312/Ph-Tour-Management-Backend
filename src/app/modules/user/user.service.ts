@@ -1,5 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
-import { IAuthProvider, isActive, IUser, Role } from "./user.interface";
+import { IAuthProvider, IUser, Role } from "./user.interface";
 import User from "./user.models";
 import httpStatus from "http-status-codes"
 import bycryptjs from "bcryptjs"

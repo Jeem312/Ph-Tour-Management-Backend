@@ -22,7 +22,7 @@ export interface IUser {
     email: string;
     name: string;
     role: Role;
-    password?: string;
+    password: string;
     phone: string;
     picture: string;
     address: string;
@@ -32,5 +32,6 @@ export interface IUser {
     auths?: IAuthProvider[];
     bookings?: Types.ObjectId[];
     guides?: Types.ObjectId[];
+   
 
 }
