@@ -1,40 +1,46 @@
-import z, { object } from "zod";
+import { z } from "zod";
 import { isActive, Role } from "./user.interface";
 
-
-  export const createUserZodSchema = z.object({
-        name: z.string({
-            invalid_type_error: "Name Must Be String "
-        }).min(2,{message: "Name Too Short "}).max(50,{message:"Name too long"}),
-        email: z.string().email(),
-      
-        password: z.string().min(8,{
-            message: "Password Should Be 8 Character"
-        }),
-        phone: z.string().min(11).max(11).optional(),
-        address: z.string().optional(),
-          
-           
+export const createUserZodSchema = z.object({
+  body: z.object({
+    name: z.string({
+      invalid_type_error: "Name must be a string",
     })
+      .min(2, { message: "Name too short" })
+      .max(50, { message: "Name too long" }),
 
+    email: z.string().email({ message: "Invalid email address" }),
 
-    export const UpdateUserZodSchema = z.object({
-        name: z.string({
-            invalid_type_error: "Name Must Be String "
-        }).min(2,{message: "Name Too Short "}).max(50,{message:"Name too long"}).optional(),
-     
-      
-        password: z.string().min(8,{
-            message: "Password Should Be 8 Character"
-        }).optional(),
-        phone: z.string().min(11).max(11).optional(),
-        address: z.string().optional(),
-        role: z.enum(Object.values(Role) as [string]).optional(),
-        isActive: z.enum(Object.values(isActive) as [string]).optional(),
-        isDeleted:z.boolean().optional(),
-        isVarified: z.boolean().optional()
-          
-           
-    })
+    password: z.string()
+      .min(8, { message: "Password should be at least 8 characters" }),
 
+    phone: z.string()
+      .min(11, { message: "Phone should be 11 digits" })
+      .max(11, { message: "Phone should be 11 digits" }),
 
+    picture: z.string().url({ message: "Picture must be a valid URL" }),
+
+    address: z.string({
+      invalid_type_error: "Address must be a string",
+    }),
+
+    role: z.enum(Object.values(Role) as [string]).optional(),
+    isActive: z.enum(Object.values(isActive) as [string]).optional(),
+    isVerified: z.boolean().optional(),
+    isDeleted: z.boolean().optional(),
+  }),
+});
+
+export const UpdateUserZodSchema = z.object({
+  body: z.object({
+    name: z.string().min(2).max(50).optional(),
+    password: z.string().min(8).optional(),
+    phone: z.string().min(11).max(11).optional(),
+    picture: z.string().url().optional(),
+    address: z.string().optional(),
+    role: z.enum(Object.values(Role) as [string]).optional(),
+    isActive: z.enum(Object.values(isActive) as [string]).optional(),
+    isVerified: z.boolean().optional(),
+    isDeleted: z.boolean().optional(),
+  }),
+});
